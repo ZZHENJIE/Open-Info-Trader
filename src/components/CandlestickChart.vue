@@ -56,7 +56,7 @@ export default defineComponent({
         }
     },
     watch:{
-        symbol(newValue, oldValue){
+        symbol(){
             this.flushed()
         }
     },
