@@ -1,6 +1,5 @@
 import CryptoJS from 'crypto-js';
 
-// 定义请求配置类型
 interface RequestConfig {
     transitional: {
         silentJSONParsing: boolean;
@@ -19,36 +18,54 @@ interface RequestConfig {
     headers: {
         Accept: string;
     };
-    params: Record<string, any>;
     baseURL: string;
+    signal: Record<string, any>;
     method: string;
     url: string;
+    params?: Record<string, any>;
+    data?: Record<string, any>;
 }
 
-// 定义请求配置
-const requestConfig: RequestConfig = {
-    transitional: {
-        silentJSONParsing: true,
-        forcedJSONParsing: true,
-        clarifyTimeoutError: false,
-    },
-    adapter: ["xhr", "http"],
-    transformRequest: [null],
-    transformResponse: [null],
-    timeout: 5000,
-    xsrfCookieName: "XSRF-TOKEN",
-    xsrfHeaderName: "X-XSRF-TOKEN",
-    maxContentLength: -1,
-    maxBodyLength: -1,
-    env: {},
-    headers: {
-        Accept: "application/json, text/plain, */*",
-    },
-    params: {},
-    baseURL: "/quote-api/quote-v2",
-    method: "get",
-    url: "/user-broker",
-};
+export function CreateRequestConfig(
+    url: string,
+    method: string,
+    params?: Record<string, any>,
+    data?: Record<string, any>,
+){
+    const Template:RequestConfig = {
+        transitional: {
+            silentJSONParsing: true,
+            forcedJSONParsing: true,
+            clarifyTimeoutError: false,
+        },
+        adapter: ["xhr", "http"],
+        transformRequest: [null],
+        transformResponse: [null],
+        timeout: 5000,
+        xsrfCookieName: "XSRF-TOKEN",
+        xsrfHeaderName: "X-XSRF-TOKEN",
+        maxContentLength: -1,
+        maxBodyLength: -1,
+        env: {},
+        headers: {
+            Accept: "application/json, text/plain, */*",
+        },
+        baseURL: "/quote-api/quote-v2",
+        signal:{},
+        method: method,
+        url: url
+    };
+
+    if (params) {
+        Template.params = params;
+    }
+
+    if (data) {
+        Template.data = data;
+    }
+
+    return Template;
+}
 
 // HMAC SHA512 加密函数
 function hmacEncrypt(text: string, key: string): string {
@@ -74,7 +91,7 @@ function normalizeData(data: Record<string, any>): string {
 }
 
 // 生成 token 的核心逻辑
-function generateToken(data: { data?: any; params?: any }): string {
+export function GenerateToken(data: { data?: any; params?: any }): string {
     const temp = (function(data) {
         data.length <= 0 && (data = "quote");
         return sha256Encrypt(hmacEncrypt(data, "quote_web").toString().slice(0, 10)).toString().slice(0, 10);
@@ -83,17 +100,7 @@ function generateToken(data: { data?: any; params?: any }): string {
     return temp;
 }
 
-// 获取 token 的主函数
-export default function getToken(params?: Record<string, any>): string {
-    requestConfig.params = params || {}; // 更新请求参数
-    return generateToken(requestConfig);
+export default{
+    CreateRequestConfig,
+    GenerateToken
 }
-
-
-
-// 定义事件处理器
-// export default defineEventHandler(async (event) => {
-//     return readBody(event).then(body => {
-//         return CreateApiResponse({status:200} as Response,'success',getToken(body))
-//     })
-// });

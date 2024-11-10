@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "DealBox",
+  "productName": "OpenInfoTrader",
   "version": "0.1.0",
-  "identifier": "com.dealbox.app",
+  "identifier": "com.openinfotrader.app",
   "build": {
     "beforeDevCommand": "yarn dev",
     "beforeBuildCommand": "yarn build",
@@ -12,11 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "DealBox",
+        "title": "Open Info Trader",
         "width": 800,
         "height": 600,
-        "minWidth": 400,
-        "minHeight": 300
+        "minWidth": 600,
+        "minHeight": 450
       }
     ],
     "security": {

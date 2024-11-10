@@ -1,139 +1,120 @@
 <template>
-    <ElContainer class="layout-container" :style="'height:' + windowHeight +'px'">
-        <ElAside width="180px">
-            <ElScrollbar>
-                <ElMenu :default-openeds="['1', '3']">
-                    <!-- 主页 -->
-                    <ElMenuItem index="0" @click="TogglePage(Home)">
-                        <template #title>
-                            <ElIcon>
-                                <HomeFilled />
-                            </ElIcon>{{ $t('Home') }}
-                        </template>
-                    </ElMenuItem>
-                    <!-- 富途牛牛 -->
-                    <ElSubMenu index="1">
-                        <template #title>
-                            <ElIcon>
-                                <DBIconFutu />
-                            </ElIcon>{{ $t('Futu') }}
-                        </template>
-
+    <ElContainer class="layout-container" :style="`height:${windowHeight}px`">
+        <ElAside width="65px">
+            <ElMenu collapse>
+                <!-- 主页 -->
+                <ElMenuItem index="0" @click="TogglePage(Home)">
+                    <ElIcon><HomeFilled /></ElIcon>
+                    <template #title>{{ $t('App.Home') }}</template>
+                </ElMenuItem>
+                <!-- 富途牛牛 -->
+                <ElSubMenu index="1">
+                    <template #title>
+                        <ElIcon><Futu_Icon /></ElIcon>
+                    </template>
+                    <ElMenuItemGroup>
+                        <template #title><span>{{ $t('App.Futu') }}</span></template>
                         <ElMenuItem index="1-0" @click="TogglePage(Futu_Search)">
-                            {{ $t('Search') }}
+                            {{ $t('App.Search') }}
                         </ElMenuItem>
-
-                    </ElSubMenu>
-                    <!-- 集合 -->
-                    <ElSubMenu index="2">
-                        <template #title>
-                            <ElIcon>
-                                <Grid />
-                            </ElIcon>{{ $t('Gather') }}
-                        </template>
-
-                        <ElMenuItem index="2-0" @click="TogglePage(Wallstreetcn_Event_Calendar)">
-                            {{ $t('Event Calendar') }}
+                        <ElMenuItem index="1-1" @click="TogglePage(Futu_Screener)">
+                            {{ $t('App.Screener') }}
                         </ElMenuItem>
-
+                    </ElMenuItemGroup>
+                </ElSubMenu>
+                <!-- 功能集合 -->
+                <ElSubMenu index="2">
+                    <template #title>
+                        <ElIcon><Grid /></ElIcon>
+                    </template>
+                    <ElMenuItemGroup>
+                        <template #title><span>{{ $t('App.Gather') }}</span></template>
+                        <ElMenuItem index="2-0" @click="TogglePage(Event_Calendar)">
+                            {{ $t('App.Event Calendar') }}
+                        </ElMenuItem>
                         <ElMenuItem index="2-1" @click="TogglePage(IPoscoop_Calendar)">
-                            {{ $t('IPoscoop Calendar') }}
+                            {{ $t('App.IPoscoop Calendar') }}
                         </ElMenuItem>
-
-                    </ElSubMenu>
-                    <!-- Cboe 市场 -->
-                    <ElSubMenu index="3">
-                        <template #title>
-                            <ElIcon>
-                                <DBIconCboe />
-                            </ElIcon>{{ $t('Cboe') }}
-                        </template>
-
-                        <ElMenuItem index="3-0" @click="TogglePage(Cboe_BookViewer)">
-                            {{ $t('Book Viewer') }}
+                        <ElMenuItem index="2-2" @click="TogglePage(Cboe_Book_Viewer)">
+                            {{ `Cboe ${$t('App.Book Viewer')}` }}
                         </ElMenuItem>
-
-                    </ElSubMenu>
-                </ElMenu>
-            </ElScrollbar>
+                    </ElMenuItemGroup>
+                </ElSubMenu>
+                <!-- 设置 -->
+                <ElMenuItem index="3" @click="OpenSetting = !OpenSetting">
+                    <ElIcon><SettingHollow /></ElIcon>
+                    <template #title>{{ $t('App.Setting') }}</template>
+                </ElMenuItem>
+            </ElMenu>
         </ElAside>
-
+        
         <ElContainer>
-            <ElHeader>
-                <ElCol>
-                    <ElRow :span="1">
-                        <ThemeChoose></ThemeChoose>
-                        <LanguageChoose></LanguageChoose>
-                    </ElRow>
-                    <ElRow :span="1">
-                        <TimeViewer></TimeViewer>
-                    </ElRow>
-                </ElCol>
+            <ElHeader height="20px">
+                <TimeViewer></TimeViewer>
             </ElHeader>
-
             <ElMain>
-                <ElScrollbar>
-                    <component :is="CurrentPage"></component>
-                </ElScrollbar>
+                <ElDrawer
+                    v-model="OpenSetting"
+                    :with-header="false"
+                    direction="rtl"
+                    size="90%"
+                >
+                    <Setting ref="SettingPage" />
+                </ElDrawer>
+                <component
+                    :style="`height:${windowHeight - 60}px`"
+                    :is="CurrentPage">
+                </component>
             </ElMain>
-
         </ElContainer>
     </ElContainer>
-
 </template>
 
-<script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue'
-import Futu_Search from './components/Futu/Search.vue';
-import Home from './components/Home.vue';
-import TimeViewer from './components/Header/TimeViewer.vue';
-import Wallstreetcn_Event_Calendar from './components/Gather/Wallstreetcn_Event_Calendar.vue';
-import DBIconFutu from './components/Icon/DBIconFutu.vue';
-import DBIconCboe from './components/Icon/DBIconCboe.vue';
-import ThemeChoose from './components/Header/ThemeChoose.vue';
-import LanguageChoose from './components/Header/LanguageChoose.vue';
-import IPoscoop_Calendar from './components/Gather/IPoscoop_Calendar.vue';
-import Cboe_BookViewer from './components/Cboe/BookViewer.vue';
+<script lang="ts">
+import { defineComponent, shallowRef } from 'vue';
+import { Setting as SettingHollow } from '@element-plus/icons-vue'
+import TimeViewer from './components/TimeViewer.vue';
+//页面
+import Home from './components/Page/Home.vue'
+import Setting from './components/Page/Setting.vue'
+import Futu_Search from './components/Page/Futu/Search.vue'
+import Futu_Screener from './components/Page/Futu/Screener.vue'
+import Cboe_Book_Viewer from './components/Page/Gather/Cboe_Book_Viewer.vue'
+import Event_Calendar from './components/Page/Gather/Event_Calendar.vue'
+import IPoscoop_Calendar from './components/Page/Gather/IPoscoop_Calendar.vue'
+//图标
+import Futu_Icon from './components/Icon/IconFutu.vue'
 
-const CurrentPage = ref(Home)
-
-const TogglePage = (Page: any) => {
-    CurrentPage.value = Page;
-}
-
-const windowHeight = ref(window.innerHeight - 40);
-
-const getWindowHeight = () => {
-    windowHeight.value = window.innerHeight - 40;
-};
-
-onMounted(() => {
-    window.addEventListener('resize', getWindowHeight);
-});
-
-onBeforeMount(() => {
-    window.removeEventListener('resize', getWindowHeight);
-});
-
+export default defineComponent({
+    components:{
+        Setting,
+        TimeViewer,
+        Futu_Icon,
+        SettingHollow
+    },
+    data(){
+        return{
+            Home:Home,
+            Futu_Search:Futu_Search,
+            Futu_Screener:Futu_Screener,
+            Cboe_Book_Viewer:Cboe_Book_Viewer,
+            Event_Calendar:Event_Calendar,
+            IPoscoop_Calendar:IPoscoop_Calendar,
+            CurrentPage:shallowRef(Home),
+            OpenSetting:true,
+            windowHeight:window.innerHeight,
+        }
+    },
+    mounted() {
+        this.OpenSetting = false;
+        window.addEventListener('resize', () => {
+            this.windowHeight = window.innerHeight;
+        });
+    },
+    methods:{
+        TogglePage(Page:any){
+            this.CurrentPage = Page;
+        }
+    }
+})
 </script>
-
-<style lang="css" scoped>
-.layout-container .ElHeader {
-    position: relative;
-    background-color: var(--Elcolor-primary-light-7);
-    color: var(--Eltext-color-primary);
-}
-
-.layout-container .ElAside {
-    color: var(--Eltext-color-primary);
-    background: var(--Elcolor-primary-light-8);
-}
-
-.layout-container .ElMenu {
-    border-right: none;
-}
-
-.layout-container .ElMain {
-    padding: 0;
-}
-</style>

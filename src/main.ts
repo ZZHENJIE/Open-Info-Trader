@@ -1,23 +1,23 @@
 import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
 import ElementPlus from 'element-plus'
-import './main.css'
+import './style/main.css'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import App from './App.vue'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 //internationalization
-import zh from './internationalization/zh'
-import en from './internationalization/en'
+import zh_cn from './extended/internationalization/zh_cn'
+import en_us from './extended/internationalization/en_us'
 
 const i18n = createI18n({
   legacy: false,
   messages:{
-    zh:zh,
-    en:en
+    zh_cn:zh_cn,
+    en_us:en_us
   },
-  locale: 'en'
+  locale: 'en_us'
 })
 
 const app = createApp(App)

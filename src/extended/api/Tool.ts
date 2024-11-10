@@ -1,6 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
 
-export async function taobao_timestamp() {
+export async function taobao_timestamp():Promise<any>{
     const url = `https://acs.m.taobao.com/gw/mtop.common.getTimestamp/`;
 
     return fetch(url,{

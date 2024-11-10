@@ -1,18 +1,61 @@
 import { fetch } from "@tauri-apps/plugin-http";
 
-export async function wallstreetcn_event_calendar(start?: number, end?: number) {
+export interface EventItem {
+    Time: string,
+    Country: string,
+    Unit: string,
+    Event: string,
+    Importance: string,
+    Actual: string,
+    Forecast: string,
+    Previous: string
+}
+
+export async function wallstreetcn_event_calendar(start?: number, end?: number):Promise<EventItem[] | undefined>{
     const url = `https://api-one-wscn.awtmt.com/apiv1/finance/macrodatas?start=${start}&end=${end}`;
 
     return fetch(url, {
         method: 'GET'
-    }).then(data => {
-        return data.json().then(json => {
-            return json.data.items;
-        });
+    }).then(async data => {
+        return data.json().then(object => {
+            const json = object.data.items;
+
+            const list:EventItem[] = [];
+
+            for (const item of json) {
+                const date = new Date(item.public_date * 1000);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+                const Actual = item.actual === "" ? "--" : item.actual;
+                const Forecast = item.forecast === "" ? "--" : item.forecast;
+                const Previous = item.previous === "" ? "--" : item.previous;
+    
+                let Importance = '';
+    
+                for (let index = 0; index < item.importance; index++) {
+                    Importance += '⭐'
+                }
+    
+                list.push({
+                    Time: `${hours}:${minutes}:${seconds}`,
+                    Country: item.flag_uri,
+                    Unit: item.unit,
+                    Event: item.title,
+                    Importance: Importance,
+                    Actual: Actual,
+                    Forecast: Forecast,
+                    Previous: Previous
+                });
+            }
+    
+            return list;
+        })
     })
 }
 
-export interface IPO_Item {
+export interface IPOItem {
     Company: string,
     Symbol: string,
     Managers: string,
@@ -23,11 +66,11 @@ export interface IPO_Item {
     Expected_Date: string
 };
 
-export async function ipooscoop_calendar() {
+export async function ipooscoop_calendar():Promise<IPOItem[] | undefined>{
     const url = `https://www.iposcoop.com/ipo-calendar/`;
     return fetch(url, {
         method: 'GET'
-    }).then(data => {
+    }).then(async data => {
         return data.text().then(html => {
 
             const Data = [];

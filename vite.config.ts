@@ -18,7 +18,7 @@ export default defineConfig(async () => ({
     // 如果设置了 host，Tauri 则会使用
     host: host || false,
     port: 5173,
-    hmr: host
+    hmr: host,
   }
 }));
 
