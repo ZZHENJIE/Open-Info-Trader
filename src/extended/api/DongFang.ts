@@ -1,5 +1,4 @@
 import { fetch } from "@tauri-apps/plugin-http"
-import { CandlestickChartData } from '../Echarts'
 
 type Market = '105' | '106' | '107';
 //105 纳斯达克交易所 106 纽约交易所 107 美国证券交易所
@@ -27,6 +26,20 @@ interface StockInfo{
     market:Market
 }
 
+interface CandlestickChartItem{
+    time:string,
+    open:number,
+    close:number,
+    high:number,
+    low:number,
+    volume:number
+}
+
+export interface CandlestickChartData{
+    items:CandlestickChartItem[],
+    symbol:string
+}
+
 export async function get_stock_info(symbol:string):Promise<StockInfo | undefined>{
     return fetch(`https://gbapi.eastmoney.com/webarticlelist/api/Article/Articlelist?code=us${symbol}`,{
         method:'GET'
@@ -51,28 +64,20 @@ export async function long_candlestick_chart(params:Longchart):Promise<Candlesti
         return data.json().then(object => {
             const trends = object.data.klines;
             const data:CandlestickChartData = {
-                candlestick:[],
-                volume:[],
-                date:[],
+                items:[],
                 symbol:object.data.code
             };
             for (const key in trends) {
                 const item = trends[key].toString().split(',');
-                data.date.push(item[0])
-                data.candlestick.push([
-                    parseFloat(item[1]),
-                    parseFloat(item[2]),
-                    parseFloat(item[4]),
-                    parseFloat(item[3]),
-                    parseInt(item[5]),
-                ])
-                data.volume.push([
-                    parseInt(key),
-                    parseInt(item[5]),
-                    parseFloat(item[1]) > parseFloat(item[2]) ? 1 : -1
-                ])
+                data.items.push({
+                    time:item[0],
+                    open:parseFloat(item[1]),
+                    close:parseFloat(item[2]),
+                    high:parseFloat(item[3]),
+                    low:parseFloat(item[4]),
+                    volume:parseFloat(item[5]),
+                })
             }
-
             return data
         });
     })
@@ -86,26 +91,19 @@ export async function tick_candlestick_chart(params:Tickchart):Promise<Candlesti
         return data.json().then(object => {
             const trends = object.data.trends;
             const data:CandlestickChartData = {
-                candlestick:[],
-                volume:[],
-                date:[],
+                items:[],
                 symbol:object.data.code
             };
             for (const key in trends) {
                 const item = trends[key].toString().split(',');
-                data.date.push(item[0])
-                data.candlestick.push([
-                    parseFloat(item[1]),
-                    parseFloat(item[2]),
-                    parseFloat(item[4]),
-                    parseFloat(item[3]),
-                    parseInt(item[5]),
-                ])
-                data.volume.push([
-                    parseInt(key),
-                    parseInt(item[5]),
-                    parseFloat(item[1]) > parseFloat(item[2]) ? 1 : -1
-                ])
+                data.items.push({
+                    time:item[0],
+                    open:parseFloat(item[1]),
+                    close:parseFloat(item[2]),
+                    high:parseFloat(item[3]),
+                    low:parseFloat(item[4]),
+                    volume:parseFloat(item[5]),
+                })
             }
             return data
         });

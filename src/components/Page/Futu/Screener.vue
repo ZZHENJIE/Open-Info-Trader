@@ -32,7 +32,6 @@ export default defineComponent({
                     this.screener_list = data;
                     this.currentlistindex = 0;
                     this.currentsymbol = this.screener_list[this.currentlistindex].stockCode
-
                 }
             })
         },
@@ -80,20 +79,15 @@ export default defineComponent({
                 </template>
             </ElDialog>
         </ElHeader>
-
-            <template v-if="!show_candlestick_chart">
-                <ElTable :data="screener_list">
-                <ElTableColumn :label="$t('Futu_Screener.StockCode')" prop="stockCode"></ElTableColumn>
-                <ElTableColumn show-overflow-tooltip :label="$t('Futu_Screener.Name')" prop="name"></ElTableColumn>
-                <ElTableColumn :label="$t('Futu_Screener.Price')" prop="price"></ElTableColumn>
-                <ElTableColumn :label="$t('Futu_Screener.ChangeRatio')" prop="changeRatio"></ElTableColumn>
-                <ElTableColumn :label="$t('Futu_Screener.Change')" prop="change"></ElTableColumn>
-                <ElTableColumn :label="$t('Futu_Screener.Markcap')" prop="markcap"></ElTableColumn>
-                <ElTableColumn :label="$t('Futu_Screener.Volume')" prop="volume"></ElTableColumn>
-            </ElTable>
-            </template>
-            <template v-else>
-                <CandlestickChart :symbol="currentsymbol" :offset="-110" eleid="FutuScreenerCandlestickChart" />
-            </template>
+        <CandlestickChart v-if="show_candlestick_chart" :symbol="currentsymbol" :offset="-110" eleid="FutuScreener" ></CandlestickChart>
+        <ElTable v-else :data="screener_list">
+            <ElTableColumn :label="$t('Futu_Screener.StockCode')" prop="stockCode"></ElTableColumn>
+            <ElTableColumn show-overflow-tooltip :label="$t('Futu_Screener.Name')" prop="name"></ElTableColumn>
+            <ElTableColumn :label="$t('Futu_Screener.Price')" prop="price"></ElTableColumn>
+            <ElTableColumn :label="$t('Futu_Screener.ChangeRatio')" prop="changeRatio"></ElTableColumn>
+            <ElTableColumn :label="$t('Futu_Screener.Change')" prop="change"></ElTableColumn>
+            <ElTableColumn :label="$t('Futu_Screener.Markcap')" prop="markcap"></ElTableColumn>
+            <ElTableColumn :label="$t('Futu_Screener.Volume')" prop="volume"></ElTableColumn>
+        </ElTable>
     </ElContainer>
 </template>

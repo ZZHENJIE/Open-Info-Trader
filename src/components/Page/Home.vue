@@ -8,15 +8,15 @@ export default defineComponent({
     },
     data() {
         return {
-            text: '',
-            symbol: ''
+            text: 'NIO',
+            symbol: '',
         }
     },
     methods: {
         comfirm() {
             this.symbol = this.text;
         }
-    }
+    },
 })
 
 </script>
@@ -33,6 +33,6 @@ export default defineComponent({
                 </ElCol>
             </ElRow>
         </ElHeader>
-        <CandlestickChart :symbol="symbol" eleid="test"></CandlestickChart>
+        <CandlestickChart :symbol="symbol" v-bind:offsetwidth="-90" :offsetheight="-110" eleid="HomeTest"></CandlestickChart>
     </ElContainer>
 </template>

@@ -19,6 +19,15 @@ export default defineConfig(async () => ({
     host: host || false,
     port: 5173,
     hmr: host,
+  },
+  build:{
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          echarts: ['echarts']
+        }
+      },
+    },
   }
 }));
 
